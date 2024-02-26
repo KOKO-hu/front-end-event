@@ -6,10 +6,20 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Poppins-Medium.ttf"],
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#EDE5E5"
     },
     "assetBundlePatterns": [
       "**/*"
