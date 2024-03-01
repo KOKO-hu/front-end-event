@@ -20,9 +20,10 @@ import { AuthContext } from "../../context/auth-context";
 import Back from "../../helper/back";
 import * as SplashScreen from "expo-splash-screen";
 import { MaterialIcons } from "@expo/vector-icons";
+import { validateSignIn, validateSignUp } from "../../helper/validator";
+import { authenticate } from "../../api/auth";
 
-import { validateSignUp } from "../../helper/validator";
-import { userLogin } from "../../api/auth";
+
 const Login = () => {
   SplashScreen.preventAutoHideAsync();
   const navigation = useNavigation();
@@ -31,22 +32,21 @@ const Login = () => {
   const [password, setPassword] = useState();
   const [error, setError] = useState();
   const signInHandler = async () => {
-    const { valid, errors } = validateSignUp({ password, email });
+    const data = {
+      email,
+      password,
+    };
+    const { valid, errors } = validateSignIn(data);
     if (!valid) {
       setError(errors);
     } else {
-      try {
-        const response = await userLogin({ email, password });
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
-      /* dispatch(infoUserReducer(data)); */
-      setError(null);
-      /*   navigation.navigate("interest"); */
+      authenticate(data).then(({data})=>{
+        console.log("User logged in", data.token);
+         authCtx.authentificate( data.token) 
+      }).catch((error) => {
+        console.log("User error", error);
+      });
     }
-    console();
-    /*  authCtx.authentificate(); */
   };
 
   const [fontsLoaded, fontError] = useFonts({
@@ -65,7 +65,7 @@ const Login = () => {
   }
   return (
     <Box safeArea bgColor={"white"} flex={1}>
-      <KeyboardAvoidingView>
+ 
         <Back />
         <Column p={4} justifyContent={"center"} mt={8}>
           <Box>
@@ -114,13 +114,6 @@ const Login = () => {
                 <Foundation name="key" size={24} color="black" />
               </Box>
             }
-            /*     rightElement={
-              <Box px={5}>
-                {error?.email && (
-                  <MaterialIcons name="error" size={24} color="red" />
-                )}
-              </Box>
-            } */
             rightElement={
               <>
                 {error?.password ? (
@@ -159,7 +152,7 @@ const Login = () => {
               bgColor={"#C0392B"}
               my={2}
               /* variant="outline" */
-              _pressed={{ bgColor: "#f2d7d4" }}
+                 _pressed={{ bgColor: "#f2d7d4" }} 
               onPress={() => signInHandler()}
             >
               Connexion
@@ -185,7 +178,7 @@ const Login = () => {
             </Row>
           </Box>
         </Column>
-      </KeyboardAvoidingView>
+      
     </Box>
   );
 };

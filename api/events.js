@@ -20,3 +20,10 @@ export const event = async () => {
   );
   return response;
 };
+
+export const eventById = async (id) => {
+  const response = await axios.get(
+    `${process.env.EXPO_PUBLIC_API_URL}/events/${id}`
+  );
+  return response;
+};

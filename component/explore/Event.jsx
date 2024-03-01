@@ -23,7 +23,7 @@ const Event = ({ item }) => {
   }
   return (
     <Box my={2} elevation={1} mx={6} bg={"white"} rounded={"sm"}>
-      <Pressable onPress={()=>navigation.navigate('detailEvent')}>
+      <Pressable onPress={()=>navigation.navigate('detailEvent',{params:item._id})}>
   
       <Column space={6}>
         <Image

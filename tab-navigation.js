@@ -13,6 +13,10 @@ import Uploadpictureprofil from "./screen/auth/upload-picture-profil";
 import SignUp from "./screen/auth/sign-up";
 import CodeVerify from "./screen/auth/code-verify";
 import DetailEvent from "./screen/detail-event";
+import Paiement from "./screen/paiement";
+import CreateEvent from "./screen/events/create-event";
+import descriptionEvent from "./screen/events/description-event";
+import TicketEvent from "./screen/events/ticket-event";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = () => {
@@ -62,9 +66,29 @@ const AuthenticateStack = () => {
           component={Explore}
           options={{ headerShown: false }}
         />
-           <Stack.Screen
+        <Stack.Screen
           name="detailEvent"
           component={DetailEvent}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="paiement"
+          component={Paiement}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="createEvent"
+          component={CreateEvent}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="descriptionEvent"
+          component={descriptionEvent}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="createTicketEvent"
+          component={TicketEvent}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

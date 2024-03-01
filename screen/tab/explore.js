@@ -17,6 +17,7 @@ import { CATEGORES_EVENTS } from "../../helper/Index";
 import { allEvent } from "../../api/events";
 import { Octicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import Footer from "../../layout/Footer";
 const Explore = () => {
   
   const data = [
@@ -65,7 +66,7 @@ const Explore = () => {
     allEvent({ page: 1, limit: 8, category: "" })
       .then((events) => {
         setEvents(events.data)
-        console.log("events dezs d is", events);
+        console.log("events de is", events);
       })
       .then((error) => {
         console.log("events error", error);
@@ -90,13 +91,10 @@ const Explore = () => {
     return null;
   }
   return (
-    <Box flex={1} safeArea>
+  <>
+    <Box flex={1} mt={5}>
       <Header />
       <View style={{ flex: 1 }}>
-        {/*   <ScrollView showsHorizontalScrollIndicator={false}>
-   
-        </ScrollView> */}
-
         <>
           <Box mx={4} my={2}>
             <Text fontSize={15} fontFamily={"Poppins-Bold"}>
@@ -188,6 +186,9 @@ const Explore = () => {
         </>
       </View>
     </Box>
+    {/* footer */}
+    <Footer/>
+    </>
   );
 };
 

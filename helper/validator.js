@@ -17,8 +17,8 @@ export const validateSignUp = (data) => {
   };
 };
 
-export const validateSignIn=()=> {
-  const { password, email,  } = data;
+export const validateSignIn=(data)=> {
+  const { password, email} = data;
   const errors = {};
   if (!email || (email && !isEmail(email)))
     errors.email = "Veuillez entrer votre mail";
