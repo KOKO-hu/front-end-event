@@ -143,19 +143,7 @@ const Interest = () => {
                     Suivant
                   </Button>
                 </Box>
-    /*         <Center mt={12} px={5}>
-              <Button
-                w={"100%"}
-                _text={{ color: "white", fontFamily: "PoppinsSemiBold" }}
-                borderColor={"#FF9900"}
-                bgColor={"#FF9900"}
-                my={2}
-                onPress={() => handleRegister()}
-                _pressed={{ bgColor: "#f2d7d4" }}
-              >
-                Valider
-              </Button>
-            </Center> */
+    
           )}
 
       </Box>

@@ -1,3 +1,14 @@
+import * as ImagePicker from "expo-image-picker";
+/* import * as firebase from 'expo-firebase-app'; */
+
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../app-config-firebase";
+
 export const DATA = [
   {
     key: 0,
@@ -41,7 +52,7 @@ export const CATEGORES_EVENTS = [
   { key: 0, label: "Sports" },
   { key: 1, label: "Conferences" },
   { key: 2, label: "Expos" },
-  { key: 3, label: "Concerts" },
+  { key: 3, label: "Concert" },
   { key: 4, label: "Festivals" },
   { key: 5, label: "Performing Arts" },
   { key: 6, label: "Community" },
@@ -52,45 +63,108 @@ export const TICKET_EVENTS = [
   { key: 1, title: "STANDARD", label: "Accès privélégié à l'evènement" },
 ];
 
-export const EVENT_PUBLIC =[
-  { key: 0, title: "Sport",  },
-  { key: 1, title: "Conférence",  },
-  { key: 2, title: "Expo",  },
-  { key: 3, title: "Concert",  },
-  { key: 4, title: "Festival",  },
-  { key: 5, title: "Performing Arts",  },
-  { key: 6, title: "Community",  },
-  { key: 7, title: "Autre",  },
-  
-]
-export const EVENT_PRIVATE =[
-  { key: 0, title: "Soirée déguisée",  },
-  { key: 1, title: "Ateliers culinaires",  },
-  { key: 2, title: "Activités culturelles",  },
-  { key: 3, title: "Activités en plein air",  },
-  { key: 4, title: "Sportives",  },
-  { key: 5, title: "Voyage",  },
-  { key: 6, title: "Pique-nique",  },
-  { key: 7, title: "Jeux vidéo",  },
-  { key: 8, title: "Plateformes de streaming",  },
-  { key: 9, title: "Autre",  },
- 
-  
-]
-export const TYPE_EVENT =[
-  {key:0, title:"Privé"},
-  {key:1, title:"Public"},
-]
-export const STATUS_BILLETS =[{
-  key:1, status:"Payant",
-  
-},{Key:2 , status:"Gratuit"}]
+export const EVENT_PUBLIC = [
+  { key: 0, title: "Sport" },
+  { key: 1, title: "Conférence" },
+  { key: 2, title: "Expo" },
+  { key: 3, title: "Concert" },
+  { key: 4, title: "Festival" },
+  { key: 5, title: "Performing Arts" },
+  { key: 6, title: "Community" },
+  { key: 7, title: "Autre" },
+];
+export const EVENT_PRIVATE = [
+  { key: 0, title: "Soirée déguisée" },
+  { key: 1, title: "Ateliers culinaires" },
+  { key: 2, title: "Activités culturelles" },
+  { key: 3, title: "Activités en plein air" },
+  { key: 4, title: "Sportives" },
+  { key: 5, title: "Voyage" },
+  { key: 6, title: "Pique-nique" },
+  { key: 7, title: "Jeux vidéo" },
+  { key: 8, title: "Plateformes de streaming" },
+  { key: 9, title: "Autre" },
+];
+export const TYPE_EVENT = [
+  { key: 0, title: "Privé" },
+  { key: 1, title: "Public" },
+];
+export const STATUS_BILLETS = [
+  {
+    key: 1,
+    status: "Payant",
+  },
+  { Key: 2, status: "Gratuit" },
+];
 export const onBirthDateChange = (event, selectedDate) => {
-
   const currentDate = selectedDate || new Date(2000, 0, 1);
   if (Platform.OS === "android") {
-/*     setShowDatePicker(false); */
+    /*     setShowDatePicker(false); */
   }
-  return currentDate
-
+  return currentDate;
 };
+
+export const pickMedia = async () => {
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+
+  console.log(result);
+
+  if (!result.cancelled) {
+    return result;
+  }
+  return null;
+};
+
+export async function uploadFileAndGetDownloadURL(files) {
+  console.log()
+  try {
+    const uploadPromises = files.map(async ({ fileUri, fileName,type }) => {
+      const response = await fetch(fileUri);
+      const blob = await response.blob();
+      const storageRef = ref(storage, "imageEvent/" + fileName);
+      const task = uploadBytesResumable(storageRef, blob);
+
+      await task; // Attendez que la tâche de téléchargement soit terminée
+
+      const downloadURL = await getDownloadURL(task.snapshot.ref);
+      console.log("Download URL:", {fileUri:downloadURL, fileType:type});
+
+      return {fileUri:downloadURL, fileType:type}; // Retournez l'URL de téléchargement
+    });
+
+    const downloadURLs = await Promise.all(uploadPromises);
+    return downloadURLs; // Retournez l'ensemble des URL de téléchargement
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    throw error;
+  }
+/*   try {
+
+    const response = await fetch(fileUri);
+    const blob = await response.blob(); 
+    const storageRef = ref(storage, "imageEvent/" + new Date().getTime());
+    const task = uploadBytesResumable(storageRef, blob);
+  
+    await task; // Attendez que la tâche de téléchargement soit terminée
+    
+    const downloadURL = await getDownloadURL(task.snapshot.ref);
+    console.log("Download URL:", downloadURL);
+    
+    return downloadURL; // Retournez l'URL de téléchargement
+  } catch (error) {
+    console.error("Error uploading:", error);
+  } */
+
+}
+export function formatDate(inputDate) {
+  const date = new Date(inputDate);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear().toString();
+  return `${day}/${month}/${year}`;
+}

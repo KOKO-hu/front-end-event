@@ -15,8 +15,10 @@ import CodeVerify from "./screen/auth/code-verify";
 import DetailEvent from "./screen/detail-event";
 import Paiement from "./screen/paiement";
 import CreateEvent from "./screen/events/create-event";
-import descriptionEvent from "./screen/events/description-event";
+import DescriptionEvent from "./screen/events/description-event";
 import TicketEvent from "./screen/events/ticket-event";
+import Picture from "./screen/events/picture";
+import Resume from "./screen/events/resume";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = () => {
@@ -83,12 +85,22 @@ const AuthenticateStack = () => {
         />
         <Stack.Screen
           name="descriptionEvent"
-          component={descriptionEvent}
+          component={DescriptionEvent}
           options={{ headerShown: false }}
         />
           <Stack.Screen
           name="createTicketEvent"
           component={TicketEvent}
+          options={{ headerShown: false }}
+        />
+             <Stack.Screen
+          name="picture"
+          component={Picture}
+          options={{ headerShown: false }}
+        />
+            <Stack.Screen
+          name="resume"
+          component={Resume}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -48,11 +48,7 @@ const CodeVerify = () => {
         console.log(error);
       });
   };
-/*    useEffect(() => {
-    getCodeAuth().then((response) => {
-      console.log(response?.data?.user?.code);
-    });
-  }, []); */
+
 
   const [fontsLoaded, fontError] = useFonts({
     "Poppins-Regular": require("../../assets/fonts/Poppins-Regular.ttf"),

@@ -8,22 +8,28 @@ import AuthContextProvider, { AuthContext } from "./context/auth-context";
 import { useContext, useEffect, useState } from "react";
 import AppLoading from "expo-app-loading";
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
+import { persistor, store } from "./redux/store";
 import { setAuthHeaders } from "./storage";
+import { PersistGate } from "redux-persist/integration/react";
+import { SocketContextProvider } from "./context/socket-context";
+/* import { firebaseConfig } from "./app-config-firebase";
+import { initializeApp } from "firebase/app"; */
 const Root = () => {
   const [isTryingLoding, setIsTryingLoding] = useState(true);
   const authCtx = useContext(AuthContext);
+
   useEffect(() => {
     const fetchToken = async () => {
       const storedToken = await AsyncStorage.getItem("token");
       if (storedToken) {
         authCtx.authentificate(storedToken);
-        setAuthHeaders(storedToken); 
+        setAuthHeaders(storedToken);
       }
       setIsTryingLoding(false);
     };
     fetchToken();
   }, []);
+
   if (isTryingLoding) {
     return <AppLoading />;
   }
@@ -33,9 +39,13 @@ export default function App() {
   return (
     <>
       <Provider store={store}>
-      <AuthContextProvider>
-        <Root />
-      </AuthContextProvider>
+        <PersistGate loading={null} persistor={persistor}>
+          <AuthContextProvider>
+            <SocketContextProvider>
+              <Root />
+            </SocketContextProvider>
+          </AuthContextProvider>
+        </PersistGate>
       </Provider>
     </>
   );
