@@ -19,6 +19,9 @@ import DescriptionEvent from "./screen/events/description-event";
 import TicketEvent from "./screen/events/ticket-event";
 import Picture from "./screen/events/picture";
 import Resume from "./screen/events/resume";
+import Favories from "./screen/tab/favories";
+import Billet from "./screen/tab/billet";
+import DetailTicket from "./screen/detail-ticket";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = () => {
@@ -88,19 +91,35 @@ const AuthenticateStack = () => {
           component={DescriptionEvent}
           options={{ headerShown: false }}
         />
-          <Stack.Screen
+        <Stack.Screen
+          name="favorie"
+          component={Favories}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
           name="createTicketEvent"
           component={TicketEvent}
           options={{ headerShown: false }}
         />
-             <Stack.Screen
+        <Stack.Screen
           name="picture"
           component={Picture}
           options={{ headerShown: false }}
         />
-            <Stack.Screen
+        <Stack.Screen
           name="resume"
           component={Resume}
+          options={{ headerShown: false }}
+        />
+           <Stack.Screen
+          name="billet"
+          component={Billet}
+          options={{ headerShown: false }}
+        />
+             <Stack.Screen
+          name="detailBillet"
+          component={DetailTicket}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

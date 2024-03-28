@@ -13,6 +13,17 @@ const Footer = () => {
 const navigation =useNavigation()
   const handlePress = (index) => {
     setActive(index);
+    switch (index) {
+      case 1:
+        navigation.navigate("billet")
+        break;
+      case 2:
+        navigation.navigate("favorie")
+        break;
+        
+      default:
+        break;
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Dimensions } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
@@ -15,21 +15,34 @@ import {
 import { EvilIcons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { AntDesign } from "@expo/vector-icons";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { useRoute } from "@react-navigation/native";
 import { eventById } from "../api/events";
+import { Video, ResizeMode } from "expo-av";
 import TicketDialog from "../component/explore/Ticket-dialog";
+import Carousel from "react-native-reanimated-carousel";
+import { formatDate } from "../helper/Index";
+
 const DetailEvent = () => {
   const route = useRoute();
+  const width = Dimensions.get("window").width;
   const [detailEvent, setDetailEvent] = useState();
   const [loading, setLoading] = useState(false);
+  const [medias, setMedias] = useState([]);
   const { params } = route.params;
+  const video = React.useRef(null);
   const { isOpen, onOpen, onClose } = useDisclose();
+  /*  console.log("Ticket", params); */
+  /*   const coordinates = {
+    latitude: 37.78825,
+    longitude: -122.4324,
+  }; */
   useEffect(() => {
     eventById(params)
       .then((response) => {
         console.log(response.data);
         setDetailEvent(response.data);
+        setMedias(response.data.medias);
         setLoading(true);
       })
       .catch((error) => {
@@ -57,7 +70,65 @@ const DetailEvent = () => {
         <ScrollView>
           <Box>
             <Skeleton h="400" px={4} w={"100%"} isLoaded={loading}>
-              <Image
+              <Carousel
+                loop
+                width={width}
+                height={width / 1.2}
+                autoPlay={false}
+                data={medias}
+                scrollAnimationDuration={1000}
+                onSnapToItem={(index) => console.log("current index:", index)}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      flex: 1,
+                      marginTop: 30,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <>
+                      {item?.fileType === "image" ? (
+                        <Box m={1}>
+                          <Image
+                            rounded={"md"}
+                            source={{
+                              uri: item.fileUri,
+                            }}
+                            resizeMode="cover"
+                            alt="Alternate Text"
+                            /*  size="xl" */
+                            h={"100%"}
+                            w={"100%"}
+                          />
+                        </Box>
+                      ) : (
+                        <Box m={1}>
+                          <View style={styles.container}>
+                            <Video
+                              ref={video}
+                              style={styles.video}
+                              source={{
+                                uri: item?.fileUri,
+                              }}
+                              useNativeControls
+                              resizeMode={ResizeMode.CONTAIN}
+                              isLooping
+                              onPlaybackStatusUpdate={(status) =>
+                                setStatus(() => status)
+                              }
+                            />
+                          </View>
+                        </Box>
+                      )}
+                    </>
+                    {/* 
+                    <Text style={{ textAlign: 'center', fontSize: 30 }}>
+                        {item.uri}
+                    </Text> */}
+                  </View>
+                )}
+              />
+              {/*     <Image
                 rounded={"md"}
                 shadow={2}
                 source={{
@@ -66,7 +137,7 @@ const DetailEvent = () => {
                 alt="Alternate Text"
                 w={"full"}
                 height={"300"}
-              />
+              /> */}
             </Skeleton>
           </Box>
           {/* detail event */}
@@ -82,13 +153,13 @@ const DetailEvent = () => {
             <Row p={3} bgColor={"white"} rounded={"3xl"} mx={2} my={2}>
               <Column flex={1}>
                 <Text fontSize={20} fontFamily={"Poppins-Bold"}>
-                  welolove concert
+                  {detailEvent?.title}
                 </Text>
                 <Row alignItems={"center"}>
                   <EvilIcons name="calendar" size={24} color="black" />
                   <Box mt={1} mx={1}>
                     <Text fontFamily={"Poppins-Regular"}>
-                      11/11/50225 - 12/5/1101
+                      {formatDate(detailEvent?.date_fin)}
                     </Text>
                   </Box>
                 </Row>
@@ -101,7 +172,8 @@ const DetailEvent = () => {
                     fontFamily={"Poppins-Regular"}
                     color={"#c0392b8a"}
                   >
-                    Londre loin
+                    {detailEvent?.country?.name} {detailEvent?.city?.name}
+                    {/* Londre loin */}
                   </Text>
                 </Row>
               </Column>
@@ -115,12 +187,29 @@ const DetailEvent = () => {
               >
                 <Box>
                   <Text fontFamily={"Poppins-Bold"} fontSize={20}>
-                    45$
+                    {detailEvent?.status === "Gratuit" ? (
+                      <>{detailEvent?.status}</>
+                    ) : (
+                      <>${detailEvent?.prix_de_billet_standart}</>
+                    )}
                   </Text>
                 </Box>
                 <Box>
                   <Text fontFamily={"Poppins-Regular"} fontSize={"10"}>
-                    256 tickets disponibles
+                    {detailEvent?.status === "Gratuit" ? (
+                      <>
+                        <Box _text={{ fontFamily: "Poppins-Regular" }}>
+                          0 tickets disponibles
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <Text fontFamily={"Poppins-Regular"}>
+                          ${detailEvent?.nombre_de_billet_standart} tickets
+                          disponibles
+                        </Text>
+                      </>
+                    )}
                   </Text>
                 </Box>
               </Column>
@@ -148,21 +237,41 @@ const DetailEvent = () => {
               </Box>
               <Box my={1}>
                 <Text fontFamily={"Poppins-Regular"}>
-                  lorem lorem lorem lorem lorem lorem lorem lorem loremlorem
-                  lorem lorem lorem loremlorem
+                  {detailEvent?.description}
                 </Text>
               </Box>
               <Box my={2}>
                 <Text fontFamily={"Poppins-Bold"}>Localisation</Text>
               </Box>
               <Box style={styles.mapContainer}>
-                <MapView style={styles.map} />
+                {detailEvent?.city && (
+                  <MapView
+                    style={styles.map}
+                    camera={{
+                      center: {
+                        latitude: detailEvent?.city?.latitude,
+                        longitude: detailEvent?.city?.longitude,
+                      },
+                      pitch: 0,
+                      heading: 0,
+                      altitude: 1000,
+                      zoom: 0,
+                    }}
+                  >
+                    <Marker
+                      coordinate={{
+                        latitude: detailEvent?.city?.latitude,
+                        longitude: detailEvent?.city?.longitude,
+                      }}
+                      title="Marquer ici"
+                    />
+                  </MapView>
+                )}
               </Box>
             </Column>
           </Skeleton>
         </ScrollView>
       </Column>
-
       <Row
         justifyContent={"space-between"}
         bgColor={"white"}
@@ -178,7 +287,6 @@ const DetailEvent = () => {
           borderColor={"#C0392B"}
           bgColor={"#C0392B"}
           my={2}
-          
           onPress={onOpen}
           /* variant="outline" */
           _pressed={{ bgColor: "#f2d7d4" }}
@@ -189,16 +297,16 @@ const DetailEvent = () => {
         <TouchableOpacity>
           <Box bg={"white"} p={2} rounded={"xl"}>
             <AntDesign
-              name={/* !item?.favorie ? "hearto" : */ "heart"}
+              name={!detailEvent?.favorie ? "hearto" : "heart"}
               size={34}
-              color={/* !item?.favorie ? "black" : */ "#C0392B"}
+              color={!detailEvent?.favorie ? "black" : "#C0392B"}
             />
           </Box>
         </TouchableOpacity>
       </Row>
       {/* modal ticlket */}
 
-       <TicketDialog isOpen={isOpen} onClose={onClose} /> 
+      <TicketDialog isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 };
@@ -213,5 +321,22 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
+  },
+  container: {
+    backgroundColor: "#ecf0f1",
+
+    /*     justifyContent: "center",
+   , */
+  },
+  video: {
+    borderRadius: "10",
+    /*   alignSelf: "center", */
+    width: "100%",
+    height: "100%",
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

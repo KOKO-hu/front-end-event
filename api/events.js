@@ -9,7 +9,6 @@ export const sendEvent = async (data) => {
 };
 
 export const allEvent = async ({ page, limit, categorie_event }) => {
-  console.log('rall event',categorie_event)
   const response = await axios.get(
     `${process.env.EXPO_PUBLIC_API_URL}/events/all?page=${page}&limit=${limit}&category=${categorie_event}`
   );

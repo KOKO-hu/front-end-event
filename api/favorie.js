@@ -27,10 +27,10 @@ export const getFavoriesByUser = async () => {
     return response;
   };
   /*  */
-  export const deleteFavorie = async ({idFavorites}) => {
-
+  export const deleteFavorie = async (favoriteId) => {
+   /*  console.log("favoriteId._id",favoriteId) */
     const response = await axios.delete(
-      `${process.env.EXPO_PUBLIC_API_URL}/favorites/${idFavorites}`
+      `${process.env.EXPO_PUBLIC_API_URL}/favorites/${favoriteId}`
     );
     return response;
   };

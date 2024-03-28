@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { allEvent } from "../api/events";
+import { getFavories, getFavoriesByUser } from "../api/favorie";
 
-const FilterEvent = () => {
-  const [events, setEvents] = useState([]);
+const FilterFavorie = () => {
+  const [favories, setFavories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [keyValue, setKeyValue] = useState(0);
   const handleFilterEvent = async ({label ,key}) => {
@@ -28,10 +29,10 @@ const FilterEvent = () => {
 
   /* init events */
   useEffect(() => {
-    allEvent({ page: 1, limit: 8, categorie_event: "" })
-      .then((events) => {
-        console.log("resultat est",events.data)
-        setEvents(events.data.events);
+    getFavoriesByUser()
+      .then((favories) => {
+     /*    console.log("resultat est",favories.data) */
+        setFavories(favories.data.favorites);
         setLoading(false)
        /*  console.log("events de is", events.data.events); */
       })
@@ -42,13 +43,13 @@ const FilterEvent = () => {
   }, []);
   return {
     handleFilterEvent,
-    events: events,
+    favories,
     keyValue,
     loading,
-    setEvents
+    setFavories
   };
 };
 
-export default FilterEvent;
+export default FilterFavorie;
 
 const styles = StyleSheet.create({});

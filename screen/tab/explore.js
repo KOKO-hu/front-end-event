@@ -22,9 +22,25 @@ import FilterEvent from "../../hook/FilterEvent";
 import LottieView from "lottie-react-native";
 import FavorieEvent from "../../hook/FavorieEvent";
 const Explore = () => {
-  const { handleFilterEvent, events, loading, keyValue } = FilterEvent();
- 
+  const { handleFilterEvent,setEvents, events, loading, keyValue } = FilterEvent();
+
   const animation = useRef(null);
+  const updateEvents = (updatedEvent) => {
+    const updatedEvents = events.map((event) => {
+      if (event._id === updatedEvent._id) {
+        // Met à jour l'événement correspondant avec les modifications apportées
+        return {
+          ...event,
+          favorie: !event.favorie, // Inverse la valeur de favorie
+        };
+      }
+      // Retourne l'événement tel quel si ce n'est pas celui qui a été mis à jour
+      return event;
+    });
+    // Met à jour l'état des événements avec les événements mis à jour
+    setEvents(updatedEvents);
+  };
+  
   /* event list */
 
   const handleEndReached = () => {
@@ -128,7 +144,9 @@ const Explore = () => {
                 <FlatList
                   showsHorizontalScrollIndicator={false}
                   data={events}
-                  renderItem={({ item }) => <Event item={item} />}
+                  renderItem={({ item }) => (
+                    <Event item={item} updateEvents={updateEvents} />
+                  )}
                   keyExtractor={(item) => item._id.toString()}
                   onEndReached={handleEndReached}
                 />
